@@ -32,7 +32,7 @@ namespace NemoWindowsServerXaml2
         NetworkStream stream;
         //  task = new Task(() => Listen());
         //Task task = new Task(() => FromClient());
-        TcpClient client;
+        List<TcpClient> clients = new List<TcpClient>();
 
         public MainWindow()
         {
@@ -81,7 +81,10 @@ namespace NemoWindowsServerXaml2
                     Output.Text = message;
                 });
 
-                ToClient(message);
+                foreach (var client in clients)
+                {
+                    ToClient(message, client);
+                }
 
                 ListViewOrders.Items.Remove(selection);
             }
@@ -95,9 +98,12 @@ namespace NemoWindowsServerXaml2
                 Output.Text = String.Format("Server has started on 127.0.0.1:8080.{0}Waiting for a connection...", Environment.NewLine);
             });
 
+            TcpClient client = null;
+
             while (true)
             {
                 client = server.AcceptTcpClient();
+                clients.Add(client);
                 Dispatcher.Invoke(() => {
                     Output.Text = ("A client connected.");
                 });
@@ -132,8 +138,9 @@ namespace NemoWindowsServerXaml2
                         + Environment.NewLine);
 
                     stream.Write(response, 0, response.Length); //Avsluta handskakningen
-                                                                // task.Start();
-                    FromClient();
+                                 
+                    Task task = new Task(() => { FromClient(client); });
+                    task.Start();
                 }
                 else
                 {
@@ -143,8 +150,9 @@ namespace NemoWindowsServerXaml2
             }
         }
 
-        void FromClient()
+        void FromClient(TcpClient client)
         {
+            stream = client.GetStream();
 
             while (true)
             {
@@ -184,7 +192,7 @@ namespace NemoWindowsServerXaml2
                     if (data == "exit") break;
                     if (!string.IsNullOrEmpty(data))
                     {
-                        ToClient(data + " ordered. Your #:" + _currentOrderId);
+                        ToClient(data + " ordered. Your #:" + _currentOrderId, client);
                     }
                 }
                 catch (Exception e)
@@ -201,8 +209,10 @@ namespace NemoWindowsServerXaml2
             client.Close();
         }
 
-        void ToClient(string input)
+        void ToClient(string input, TcpClient client)
         {
+            stream = client.GetStream();
+
             var s = input;
             var message = Encoding.UTF8.GetBytes(s);
             var send = new byte[message.Length + 2];
