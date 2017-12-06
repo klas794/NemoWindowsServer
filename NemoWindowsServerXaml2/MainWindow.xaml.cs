@@ -83,7 +83,9 @@ namespace NemoWindowsServerXaml2
 
                 foreach (var client in clients)
                 {
-                    ToClient(message, client);
+                    if(client.Connected) { 
+                        ToClient(message, client);
+                    }
                 }
 
                 ListViewOrders.Items.Remove(selection);
