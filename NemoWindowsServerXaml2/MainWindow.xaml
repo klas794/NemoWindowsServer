@@ -16,7 +16,7 @@
         </ListView>
         <Label Content="Väntande ordrar" HorizontalAlignment="Left" Margin="254,13,0,0" VerticalAlignment="Top" Height="23"/>
         <TextBlock x:Name="Output" HorizontalAlignment="Left" Margin="42,43,0,0" TextWrapping="Wrap" Text="     " VerticalAlignment="Top"/>
-        <Button Content="Order klar" HorizontalAlignment="Left" Margin="260,277,0,0" VerticalAlignment="Top" Width="76" Click="Button_Click"/>
+        <Button x:Name="ReadyButton" Content="Order klar" HorizontalAlignment="Left" Margin="260,277,0,0" VerticalAlignment="Top" Width="76" Click="Button_Click" IsEnabled="False"/>
         <Label Content="Meddelande:" HorizontalAlignment="Left" Margin="36,13,0,0" VerticalAlignment="Top"/>
 
     </Grid>

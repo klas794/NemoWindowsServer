@@ -108,6 +108,7 @@ namespace NemoWindowsServerXaml2
                 clients.Add(client);
                 Dispatcher.Invoke(() => {
                     Output.Text = ("A client connected.");
+                    ReadyButton.IsEnabled = true;
                 });
                 stream = client.GetStream();
                 //enter to an infinite cycle to be able to handle every change in stream
@@ -199,9 +200,15 @@ namespace NemoWindowsServerXaml2
                 }
                 catch (Exception e)
                 {
+                    stream.Close();
+                    client.Close();
+
+                    var connectedClientAvailable = clients.Any(x => x.Connected);
+
                     Dispatcher.Invoke(() =>
                     {
-                        Output.Text = "Client disconnected";
+                        Output.Text = "Clients disconnected";
+                        ReadyButton.IsEnabled = connectedClientAvailable;
                     });
 
                     break;
