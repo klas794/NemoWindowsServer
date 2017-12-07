@@ -178,7 +178,7 @@ namespace NemoWindowsServerXaml2
                     }
                     var data = Encoding.UTF8.GetString(decoded);
 
-                    if (data == "" || data.StartsWith("\u0003"))
+                    if (data == "" || data == "PING" || data.StartsWith("\u0003"))
                         continue;
 
                     _currentOrderId++;
